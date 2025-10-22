@@ -86,7 +86,7 @@ function ErrorMessage({ message }) {
 
 function NavBar({ children }) {
   return (
-    <nav className="nav-bar">
+    <nav className="nav-bar grid grid-cols-1 lg:grid-cols-3 gap-1 items-center px-5 lg:px-10 bg-[#6741d9] rounded-md lg:h-[7.2rem]">
       <Logo />
       {children}
     </nav>
@@ -95,9 +95,9 @@ function NavBar({ children }) {
 
 function Logo() {
   return (
-    <div className="logo">
-      <span role="img">🍿</span>
-      <h1>usePopcorn</h1>
+    <div className="logo flex items-center gap-0.5">
+      <span role="img" className="text-6xl">🍿</span>
+      <h1 className="text-4xl text-[#fff] font-semibold">usePopcorn</h1>
     </div>
   );
 }
@@ -113,7 +113,7 @@ function Search({ query, setQuery }) {
 
   return (
     <input
-      className="search"
+      className="search justify-self-center lg:max-w-3xl w-full border-none p-5 text-2xl rounded-xl text-[#dee2e6] bg-[#7950f2] transition-all duration-300"
       type="text"
       placeholder="Search movies..."
       value={query}
@@ -125,25 +125,24 @@ function Search({ query, setQuery }) {
 
 function NumResults({ movies }) {
   return (
-    <p className="num-results">
+    <p className="num-results text-2xl justify-self-end">
       Found <strong>{movies.length}</strong> results
     </p>
   );
 }
 
 function Main({ children }) {
-  return <main className="main">{children}</main>;
+  return <main className="main my-10 flex flex-col-reverse lg:flex-row justify-center gap-20 px-5 lg:px-20 lg:h-[calc(100vh-12.2rem)]">{children}</main>;
 }
 
 function Box({ children }) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="box">
-      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+    <div className="box flex-1 bg-[#2b3035] rounded-xl relative h-full min-h-20">
+      <button className="btn-toggle absolute top-4 right-4 h-10 aspect-square text-[#dee2e6] text-xl font-bold cursor-pointer z-50 rounded-full border-none bg-[#212529]" onClick={() => setIsOpen((open) => !open)}>
         {isOpen ? "–" : "+"}
       </button>
-
       {isOpen && children}
     </div>
   );
@@ -176,7 +175,7 @@ function WatchedBox() {
 
 function MovieList({ movies, onSelectMovie }) {
   return (
-    <ul className="list list-movies">
+    <ul className="list list-movies list-none py-3 relative h-full overflow-y-auto custom-scrollbar">
       {movies?.map((movie) => (
         <Movie movie={movie} key={movie.imdbID} onSelectMovie={onSelectMovie} />
       ))}
@@ -186,10 +185,10 @@ function MovieList({ movies, onSelectMovie }) {
 
 function Movie({ movie, onSelectMovie }) {
   return (
-    <li onClick={() => onSelectMovie(movie.imdbID)}>
+    <li onClick={() => onSelectMovie(movie.imdbID)} className="grid grid-cols-[4rem_1fr] grid-rows-[auto_auto] gap-x-6 text-[1.6rem] items-center p-5 cursor-pointer border-b border-[#343a40] hover:bg-[#343a40]">
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
       <div>
+        <h3>{movie.Title}</h3>
         <p>
           <span>🗓</span>
           <span>{movie.Year}</span>
@@ -303,29 +302,31 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       {isLoading ? (
         <Loader />
       ) : (
-        <>
+        <div className="px-5">
           <header>
-            <button className="btn-back" onClick={onCloseMovie}>
+            <button className="btn-back absolute left-2 top-2 bg-[#fff] h-14 w-14 rounded-full text-[#2b3035] text-4xl font-bold" onClick={onCloseMovie}>
               &larr;
             </button>
-            <img src={poster} alt={`Poster of ${movie} movie`} />
-            <div className="details-overview">
-              <h2>{title}</h2>
-              <p>
-                {released} &bull; {runtime}
-              </p>
-              <p>{genre}</p>
-              <p>
-                <span>⭐️</span>
-                {imdbRating} IMDb rating
-              </p>
+            <div className="details-overview flex gap-3 bg-[#343a40]">
+              <img src={poster} alt={`Poster of ${movie} movie`} className="max-w-64" />
+              <div className="space-y-5">
+                <h2 className="text-4xl font-bold">{title}</h2>
+                <p className="text-2xl">
+                  {released} &bull; {runtime}
+                </p>
+                <p className="text-2xl">{genre}</p>
+                <p className="text-2xl">
+                  <span>⭐️</span>
+                  {imdbRating} IMDb rating
+                </p>
+              </div>
             </div>
           </header>
 
           {/* <p>{avgRating}</p> */}
 
           <section>
-            <div className="rating">
+            <div className="rating p-5 my-5 bg-[#343a40] max-w-fit mx-auto rounded-lg">
               {!isWatched ? (
                 <>
                   <StarRating
@@ -334,26 +335,27 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
                     onSetRating={setUserRating}
                   />
                   {userRating > 0 && (
-                    <button className="btn-add" onClick={handleAdd}>
+                    <button className="btn-add w-full bg-[#6741d9] text-[#dee2e6] font-bold text-xl py-3 mt-5 rounded-3xl hover:bg-[#7950f2]" onClick={handleAdd}>
                       + Add to list
                     </button>
                   )}
                 </>
               ) : (
-                <p>
+                <p className="text-xl bg-[#343a40] rounded-lg font-semibold">
                   You rated with movie {watchedUserRating} <span>⭐️</span>
                 </p>
               )}
             </div>
-            <p>
+            <p className="text-xl my-3">
               <em>{plot}</em>
             </p>
-            <p>Starring {actors}</p>
-            <p>Directed by {director}</p>
+            <p className="text-xl my-3">Starring {actors}</p>
+            <p className="text-xl">Directed by {director}</p>
           </section>
-        </>
-      )}
-    </div>
+        </div >
+      )
+      }
+    </div >
   );
 }
 
@@ -363,9 +365,9 @@ function WatchedSummary({ watched }) {
   const avgRuntime = average(watched.map((movie) => movie.runtime));
 
   return (
-    <div className="summary">
-      <h2>Movies you watched</h2>
-      <div>
+    <div className="summary p-10 bg-[#343a40] rounded-xl">
+      <h2 className="text-3xl uppercase font-bold mb-5">Movies you watched</h2>
+      <div className="flex justify-between font-semibold text-2xl">
         <p>
           <span>#️⃣</span>
           <span>{watched.length} movies</span>
@@ -403,30 +405,34 @@ function WatchedMoviesList({ watched, onDeleteWatched }) {
 
 function WatchedMovie({ movie, onDeleteWatched }) {
   return (
-    <li>
-      <img src={movie.poster} alt={`${movie.title} poster`} />
-      <h3>{movie.title}</h3>
-      <div>
-        <p>
-          <span>⭐️</span>
-          <span>{movie.imdbRating}</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>{movie.userRating}</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>{movie.runtime} min</span>
-        </p>
+    <li className="flex items-center gap-5 p-5 border-b border-[#343a40]">
+      <img src={movie.poster} alt={`${movie.title} poster`} className="w-20" />
+      <div className="flex-1">
+        <h3 className="text-3xl font-bold mb-2">{movie.title}</h3>
+        <div className="flex text-2xl gap-10">
+          <p>
+            <span>⭐️</span>
+            <span>{movie.imdbRating}</span>
+          </p>
+          <p>
+            <span>🌟</span>
+            <span>{movie.userRating}</span>
+          </p>
+          <p>
+            <span>⏳</span>
+            <span>{movie.runtime} min</span>
+          </p>
 
-        <button
-          className="btn-delete"
-          onClick={() => onDeleteWatched(movie.imdbID)}
-        >
-          X
-        </button>
+        </div>
       </div>
+      {/* <div className="flex-1"> */}
+      <button
+        className="btn-delete h-8 w-8 rounded-full border-none bg-[#fa5252] hover:bg-[#e03131]"
+        onClick={() => onDeleteWatched(movie.imdbID)}
+      >
+        X
+      </button>
+      {/* </div> */}
     </li>
   );
 }
